@@ -1,7 +1,7 @@
 # Piano: servizio RAG di aiuto contestuale (fitframe-rag)
 
 Data: 2026-09-10
-Stato: IN REVISIONE
+Stato: APPROVATO
 
 ## Contesto
 
@@ -43,6 +43,10 @@ Confermata la proposta del piano FitFrame — `ai-chat` occupa già la 5001.
   a parte; questo status serve per gli errori che avvengono *dopo* che la
   connessione HTTP è riuscita.
 
+Tutti i messaggi restituiti dal servizio — inclusi quelli di errore
+(`error`), non solo `risposta` — sono in italiano, coerente con la lingua
+del gestionale.
+
 Aggiunto anche `GET /health` → `{ "status": "ok", "chunks": N }`, utile per
 verificare rapidamente che l'indice sia stato costruito (in locale o per un
 futuro supervisor di processo).
@@ -80,7 +84,7 @@ tests/               — pytest
 requirements.txt
 .env.example
 README.md
-docs/plan-fitframe-rag.md   — questo file
+docs/plans/plan-fitframe-rag.md   — questo file
 ```
 
 ## Punti in sospeso (non bloccanti per l'MVP)
@@ -92,3 +96,20 @@ docs/plan-fitframe-rag.md   — questo file
   avviato manualmente (`python api.py`); da rivalutare solo se il progetto
   arriva in produzione (coerente con la nota già presente nel piano
   FitFrame).
+
+## Annotazioni integrate
+
+> NOTA: la rag NON DEVE INVENTARE RISPOSTE, se non trova la risposta
+> corrispondente alla domanda nei file, risponde onestamente che non sa la
+> risposta e l'utente può entrare in contatto con l'assistenza tecnica per
+> maggiori informazioni.
+
+— **Integrata**: il `SYSTEM_PROMPT` in `api.py` già vietava di rispondere
+oltre il contesto fornito, ma il messaggio di "non trovato" andava
+aggiornato per includere il rimando all'assistenza tecnica. Nuovo testo:
+
+> "Non ho trovato questa informazione nella documentazione del gestionale.
+> Per maggiori informazioni contatta l'assistenza tecnica."
+
+Applicato in `api.py` (`MESSAGGIO_NON_TROVATO`, riusato sia nel
+`SYSTEM_PROMPT` che nella risposta quando la base di conoscenza è vuota).
