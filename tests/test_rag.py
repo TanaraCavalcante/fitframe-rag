@@ -28,6 +28,6 @@ def test_pipeline_completa_trova_contesto_rilevante():
     assert vector_store is not None
     assert n_chunks > 0
 
-    contesto, risultati = cerca_contesto(vector_store, "Come aggiungo un prodotto?")
-    assert "prodotto" in contesto.lower()
+    contesto, risultati = cerca_contesto(vector_store, "Come modifico il hero?")
+    assert "hero" in contesto.lower()
     assert len(risultati) > 0
