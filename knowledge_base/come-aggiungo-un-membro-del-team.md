@@ -25,3 +25,18 @@ Nella lista **Team** (Setup → Team), ogni riga ha dei pulsanti a destra:
   cui appare nella home page pubblica.
 - **Cestino** — elimina il membro, dopo una richiesta di conferma
   (l'azione non può essere annullata).
+
+## Come cambia la visualizzazione in base al numero di membri?
+
+Nella home page pubblica, la sezione Team si comporta diversamente a
+seconda di quanti membri hai aggiunto:
+
+- **1 o 2 membri**: griglia statica, ferma, su qualsiasi dispositivo.
+- **3 o 4 membri**: su smartphone e tablet la sezione scorre
+  automaticamente in continuo (senza frecce, non è controllabile
+  dall'utente del sito); su desktop resta invece una griglia statica.
+- **5 membri o più**: scorre automaticamente anche su desktop.
+
+Non c'è un modo per attivare o disattivare questo comportamento dal
+gestionale — dipende solo da quanti membri del team hai pubblicato in
+quel momento.
