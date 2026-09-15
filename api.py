@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
+API_TOKEN = os.getenv("API_TOKEN")
+
 KNOWLEDGE_BASE_DIR = os.path.join(os.path.dirname(__file__), "knowledge_base")
 GROQ_MODEL = "openai/gpt-oss-120b"
 
@@ -52,6 +54,9 @@ def health():
 
 @app.route("/ask", methods=["POST"])
 def ask():
+    if not API_TOKEN or request.headers.get("Authorization") != f"Bearer {API_TOKEN}":
+        return jsonify({"error": "Non autorizzato"}), 401
+
     data = request.get_json(silent=True) or {}
     domanda = (data.get("domanda") or "").strip()
 

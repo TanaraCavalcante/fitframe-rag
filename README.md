@@ -18,10 +18,11 @@ Questo servizio fa parte di un sistema a due repository:
 | **fitframe-rag** *(questo)* | Pipeline RAG completa + API Flask, stateless |
 | **FitFrame** | Laravel — autenticazione, rotta `backend/chat`, persistenza cronologia, widget frontend |
 
-Il contratto tra i due è minimo: Laravel manda `{ "domanda": "..." }`,
-questo servizio risponde `{ "risposta": "..." }`. Nessuna cronologia,
-nessun accesso a filesystem o database condiviso. Dettagli delle decisioni
-architetturali in [docs/plan-fitframe-rag.md](docs/plan-fitframe-rag.md).
+Il contratto tra i due è minimo: Laravel manda `{ "domanda": "..." }`
+autenticandosi con un token condiviso, questo servizio risponde
+`{ "risposta": "..." }`. Nessuna cronologia, nessun accesso a filesystem o
+database condiviso. Dettagli delle decisioni architetturali in
+[docs/plans/plan-fitframe-rag.md](docs/plans/plan-fitframe-rag.md).
 
 ---
 
@@ -48,8 +49,13 @@ pip install -r requirements.txt
 Crea il file `.env` (puoi copiare `.env.example`):
 ```
 GROQ_API_KEY=la_tua_chiave
+API_TOKEN=una_stringa_casuale_condivisa_con_fitframe
 ```
-Chiave disponibile su [console.groq.com/keys](https://console.groq.com/keys).
+Chiave Groq disponibile su
+[console.groq.com/keys](https://console.groq.com/keys). `API_TOKEN` è un
+segreto scelto da te: deve essere lo stesso valore configurato come
+`RAG_SERVICE_TOKEN` nel `.env` del progetto FitFrame — è quello che
+autentica le chiamate a `/ask` (vedi sotto).
 
 ---
 
@@ -82,19 +88,29 @@ Stop-Process -Id <PID>
 ```
 
 ### `POST /ask`
+**Header:**
+```
+Authorization: Bearer <API_TOKEN>
+```
+
 **Body:**
 ```json
-{ "domanda": "Come aggiungo un prodotto?" }
+{ "domanda": "Come aggiungo un corso?" }
 ```
 
 **Risposta (200):**
 ```json
-{ "risposta": "Vai nella sezione Prodotti e clicca su Nuovo prodotto..." }
+{ "risposta": "Nel menu laterale apri Setup e clicca su Corsi..." }
 ```
 
 **Errori:**
+- `401` — header `Authorization` mancante o token non corrispondente ad
+  `API_TOKEN` (la domanda non viene nemmeno elaborata)
 - `400` — domanda mancante o vuota
 - `503` — errore interno nel motore RAG (es. Groq non raggiungibile)
+
+`GET /health` resta pubblico, senza token: espone solo lo stato del
+servizio e il numero di chunk indicizzati, nessun costo di API.
 
 ---
 
@@ -129,5 +145,5 @@ knowledge_base/               — contenuti Markdown della base di conoscenza
 tests/                        — suite pytest
 requirements.txt
 .env.example
-docs/plan-fitframe-rag.md     — piano e decisioni architetturali
+docs/plans/plan-fitframe-rag.md   — piano e decisioni architetturali
 ```

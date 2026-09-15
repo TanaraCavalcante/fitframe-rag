@@ -51,6 +51,17 @@ Aggiunto anche `GET /health` → `{ "status": "ok", "chunks": N }`, utile per
 verificare rapidamente che l'indice sia stato costruito (in locale o per un
 futuro supervisor di processo).
 
+### Autenticazione di `/ask`: token condiviso semplice
+`/ask` richiede l'header `Authorization: Bearer <API_TOKEN>`: senza
+token configurato, o con un token che non corrisponde, risponde `401`
+senza elaborare la domanda (nessuna chiamata a Groq). Il valore di
+`API_TOKEN` è una stringa casuale generata una volta e condivisa a mano
+con il `.env` del progetto FitFrame (lì si chiama `RAG_SERVICE_TOKEN`) —
+niente OAuth/JWT, il servizio ha un solo chiamante conosciuto. `/health`
+resta pubblico, senza token: non fa query a Groq né espone dati sensibili.
+Decisione arrivata da un confronto con la sessione FitFrame, che aveva
+notato l'endpoint privo di qualunque controllo di provenienza.
+
 ### Base di conoscenza: `knowledge_base/*.md`
 Cartella dedicata nella radice del repository, separata da `docs/` (che
 resta per i documenti di pianificazione, come questo file). Un file
